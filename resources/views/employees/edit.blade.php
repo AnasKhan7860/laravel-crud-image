@@ -6,7 +6,7 @@
             </div>
             <div class="col-md-10">
                 <div class="form-area">
-                    <form method="POST" action="{{ route('employees.update', $employee->id) }}">
+                    <form method="POST" action="{{ route('employees.update', $employee->id) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="row">
