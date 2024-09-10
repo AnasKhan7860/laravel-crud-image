@@ -35,7 +35,7 @@
                         @forelse ($employees as $employee)
                             <tr>
                                 <td scope="col">{{ $loop->iteration + 10 * ($employees->currentPage() - 1) }}</td>
-                                <td scope="col"><img src="{{ Storage::url($employees->image)}}" width="100px" height="50px"/></td>
+                                <td scope="col"><img src="{{ Storage::url($employee->image)}}" width="100px" height="50px"/></td>
                                 <td scope="col">{{ $employee->name }}</td>
                                 <td scope="col">{{ date('d M Y', strtotime($employee->date_of_birth)) }}</td>
                                 <td scope="col">{{ $employee->phone }}</td>

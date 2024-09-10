@@ -17,7 +17,7 @@ class EmployeeRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, array<string>>
      */
     public function rules(): array
     {
@@ -25,7 +25,7 @@ class EmployeeRequest extends FormRequest
             'name' => ['required' , 'string', 'max:255'],
             'date_of_birth' => ['required', 'date', 'date_format:Y-m-d'],
             'phone'=>['required','numeric','digits:11'],
-            'image'=>['required'],
+            'image'=>[$this->isMethod('POST') ? 'required' : 'nullable', 'image', 'mimes:png,jpg', 'max:5120'], //5MB
         ];
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use App\Http\Requests\EmployeeRequest;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Employee;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\EmployeeRequest;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -32,8 +33,10 @@ class EmployeeController extends Controller
      */
     public function store(EmployeeRequest $request): RedirectResponse
     {
-        $request->image->store('employees','public');
-        Employee::create($request->validated());
+        Employee::create($request->safe()->except('image') + [
+            'image' => $request->file('image')->store('employees', 'public'),
+        ]);
+
         return to_route('employees.index')->with('success','Employee Created');
     }
     /**
@@ -59,7 +62,15 @@ class EmployeeController extends Controller
      */
     public function update(EmployeeRequest $request, Employee $employee): RedirectResponse
     {
-        $employee->update($request-> validated());
+        $employee->update($request->safe()->except('image'));
+
+        if ($request->hasFile('image')) {
+            Storage::drive('public')->delete($employee->image);
+            $employee->update([
+                'image' => $request->file('image')->store('employees', 'public'),
+            ]); 
+        }
+
         return to_route('employees.index')->with('success','Employee Updated');
     }
     /**
@@ -67,6 +78,7 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee): RedirectResponse
     {
+        Storage::drive('public')->delete($employee->image);
         $employee->delete();
         return to_route('employees.index')->with('success','Employee Deleted');
     }
